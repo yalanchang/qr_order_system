@@ -15,7 +15,7 @@ vi.mock("./db", () => ({
   createMenuItem: vi.fn().mockResolvedValue({ insertId: 99 }),
   updateMenuItem: vi.fn().mockResolvedValue(undefined),
   deleteMenuItem: vi.fn().mockResolvedValue(undefined),
-  createOrder: vi.fn().mockResolvedValue(42),
+  createOrder: vi.fn().mockResolvedValue({ orderId: 42, displayId: 1 }),
   getOrdersWithItems: vi.fn().mockResolvedValue([]),
   getPendingOrders: vi.fn().mockResolvedValue([]),
   updateOrderStatus: vi.fn().mockResolvedValue(undefined),
@@ -105,6 +105,7 @@ describe("order.create (public)", () => {
     });
     expect(result.success).toBe(true);
     expect(result.orderId).toBe(42);
+    expect(result.displayId).toBe(1);
   });
 
   it("rejects empty order items", async () => {

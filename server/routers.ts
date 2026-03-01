@@ -16,6 +16,8 @@ import {
   updateOrderStatus,
   seedMenuItems,
 } from "./db";
+import { storagePut } from "./storage";
+import { nanoid } from "nanoid";
 
 // Admin-only procedure
 const adminProcedure = protectedProcedure.use(({ ctx, next }) => {
@@ -92,6 +94,24 @@ export const appRouter = router({
         await deleteMenuItem(input.id);
         return { success: true };
       }),
+
+    // Admin: upload menu item image to S3
+    uploadImage: adminProcedure
+      .input(
+        z.object({
+          base64: z.string(), // data:image/xxx;base64,...
+          mimeType: z.string().default("image/jpeg"),
+          ext: z.string().default("jpg"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        // Strip data URL prefix if present
+        const base64Data = input.base64.replace(/^data:[^;]+;base64,/, "");
+        const buffer = Buffer.from(base64Data, "base64");
+        const key = `menu-images/${nanoid(10)}.${input.ext}`;
+        const { url } = await storagePut(key, buffer, input.mimeType);
+        return { url };
+      }),
   }),
 
   // ─── Orders ───────────────────────────────────────────────────────────────
@@ -115,7 +135,7 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        const orderId = await createOrder(
+        const { orderId, displayId } = await createOrder(
           {
             tableNumber: input.tableNumber,
             totalAmount: input.totalAmount,
@@ -130,7 +150,7 @@ export const appRouter = router({
             subtotal: item.subtotal,
           })) as Omit<import('../drizzle/schema').InsertOrderItem, 'orderId'>[]
         );
-        return { success: true, orderId };
+        return { success: true, orderId, displayId };
       }),
 
     // Admin: get pending orders for kitchen display

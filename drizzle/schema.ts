@@ -44,6 +44,7 @@ export type InsertMenuItem = typeof menuItems.$inferInsert;
 // Orders table
 export const orders = mysqlTable("orders", {
   id: int("id").autoincrement().primaryKey(),
+  displayId: int("displayId"),
   tableNumber: varchar("tableNumber", { length: 20 }).notNull(),
   status: mysqlEnum("status", ["pending", "preparing", "completed", "cancelled"])
     .default("pending")

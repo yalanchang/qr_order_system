@@ -1,4 +1,4 @@
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
 import { InsertUser, users, menuItems, orders, orderItems, InsertMenuItem, InsertOrder, InsertOrderItem } from "../drizzle/schema";
 import { ENV } from './_core/env';
@@ -101,14 +101,18 @@ export async function createOrder(order: InsertOrder, items: Omit<InsertOrderIte
   const db = await getDb();
   if (!db) throw new Error("DB not available");
 
-  const [result] = await db.insert(orders).values(order).$returningId();
+  // 計算下一個 displayId（從 1 開始遞增）
+  const [countResult] = await db.select({ count: sql<number>`COUNT(*)` }).from(orders);
+  const nextDisplayId = (countResult?.count ?? 0) + 1;
+
+  const [result] = await db.insert(orders).values({ ...order, displayId: nextDisplayId }).$returningId();
   const orderId = result.id;
 
   if (items.length > 0) {
     await db.insert(orderItems).values(items.map(i => ({ ...i, orderId })));
   }
 
-  return orderId;
+  return { orderId, displayId: nextDisplayId };
 }
 
 export async function getOrdersWithItems(status?: "pending" | "preparing" | "completed" | "cancelled") {

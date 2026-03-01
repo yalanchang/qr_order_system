@@ -38,6 +38,7 @@ export default function OrderPage() {
   const [activeCategory, setActiveCategory] = useState<string>("");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [displayOrderId, setDisplayOrderId] = useState<number | null>(null);
 
   // 從 URL 讀取桌號
   useEffect(() => {
@@ -51,6 +52,8 @@ export default function OrderPage() {
   const createOrder = trpc.order.create.useMutation({
     onSuccess: (data) => {
       setOrderId(data.orderId);
+      setDisplayOrderId(data.displayId ?? data.orderId);
+      // orderId is for internal reference only
       setOrderSuccess(true);
       dispatch(clearCart());
       dispatch(closeCart());
@@ -110,7 +113,7 @@ export default function OrderPage() {
             <CheckCircle className="w-10 h-10 text-primary" />
           </div>
           <h2 className="text-2xl font-bold text-foreground mb-2">訂單已送出！</h2>
-          <p className="text-muted-foreground mb-1">訂單編號 #{orderId} · 第 {tableNumber} 桌</p>
+          <p className="text-muted-foreground mb-1">訂單編號 #{displayOrderId ?? orderId} · 第 {tableNumber} 桌</p>
           <p className="text-muted-foreground text-sm mb-8">
             廚房正在為您準備，請稍候片刻。
           </p>

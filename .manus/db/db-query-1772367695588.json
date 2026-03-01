@@ -1,0 +1,22 @@
+{
+  "query": "SELECT id FROM orders ORDER BY id LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute SELECT id FROM orders ORDER BY id LIMIT 5;",
+  "rows": [
+    {
+      "id": "60001"
+    },
+    {
+      "id": "60002"
+    },
+    {
+      "id": "60003"
+    },
+    {
+      "id": "60004"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\n60001\n60002\n60003\n60004\n",
+  "stderr": "",
+  "execution_time_ms": 1534
+}

@@ -1,0 +1,9 @@
+{
+  "query": "\nSET @row := 0;\nUPDATE orders SET displayId = (@row := @row + 1) ORDER BY id ASC;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute \nSET @row := 0;\nUPDATE orders SET displayId = (@row := @row + 1) ORDER BY id ASC;\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1774
+}

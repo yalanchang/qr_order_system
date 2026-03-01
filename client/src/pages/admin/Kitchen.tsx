@@ -14,6 +14,7 @@ type OrderItem = {
 
 type Order = {
   id: number;
+  displayId: number | null;
   tableNumber: string;
   status: string;
   totalAmount: string;
@@ -245,7 +246,7 @@ export default function KitchenPage() {
               }`}>
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-foreground text-sm">{order.tableNumber} 桌</span>
-                  <span className="text-muted-foreground text-xs">#{order.id}</span>
+                  <span className="text-muted-foreground text-xs">#{order.displayId ?? order.id}</span>
                 </div>
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <Clock className="w-3 h-3 text-muted-foreground" />
