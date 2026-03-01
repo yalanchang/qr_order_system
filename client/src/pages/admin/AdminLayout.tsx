@@ -7,9 +7,9 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
 const NAV_ITEMS = [
-  { href: "/admin", label: "Kitchen", icon: ChefHat },
-  { href: "/admin/menu", label: "Menu", icon: UtensilsCrossed },
-  { href: "/admin/qr", label: "QR Codes", icon: QrCode },
+  { href: "/admin", label: "出餐管理", icon: ChefHat },
+  { href: "/admin/menu", label: "菜單管理", icon: UtensilsCrossed },
+  { href: "/admin/qr", label: "QR 碼產生", icon: QrCode },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +17,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [location] = useLocation();
   const logout = trpc.auth.logout.useMutation({
     onSuccess: () => { window.location.href = "/"; },
-    onError: () => toast.error("Logout failed"),
+    onError: () => toast.error("登出失敗"),
   });
 
   if (loading) {
@@ -35,18 +35,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
             <LayoutDashboard className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">Admin Access</h1>
+          <h1 className="text-2xl font-bold text-foreground mb-2">管理員登入</h1>
           <p className="text-muted-foreground text-sm mb-6">
             {isAuthenticated && user?.role !== "admin"
-              ? "You don't have admin privileges to access this area."
-              : "Please sign in with your admin account to access the backend."}
+              ? "您的帳號沒有管理員權限，請聯絡系統管理員。"
+              : "請使用管理員帳號登入以進入後台。"}
           </p>
           {!isAuthenticated && (
             <Button
               className="w-full"
               onClick={() => { window.location.href = getLoginUrl(); }}
             >
-              Sign In with Manus
+              使用 Manus 帳號登入
             </Button>
           )}
         </div>
@@ -65,8 +65,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <ChefHat className="w-4 h-4 text-sidebar-primary" />
             </div>
             <div>
-              <p className="font-bold text-sidebar-foreground text-sm">Fine Dining</p>
-              <p className="text-xs text-sidebar-foreground/50">Admin Panel</p>
+              <p className="font-bold text-sidebar-foreground text-sm">精緻餐廳</p>
+              <p className="text-xs text-sidebar-foreground/50">管理後台</p>
             </div>
           </div>
         </div>
@@ -77,14 +77,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             const isActive = location === href;
             return (
               <Link key={href} href={href}>
-                <a className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                <div className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
                   isActive
                     ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-sm"
                     : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
                 }`}>
                   <Icon className="w-4 h-4" />
                   {label}
-                </a>
+                </div>
               </Link>
             );
           })}
@@ -94,16 +94,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="px-3 py-4 border-t border-sidebar-border">
           <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
             <div className="w-7 h-7 rounded-full bg-sidebar-primary/20 flex items-center justify-center text-xs font-bold text-sidebar-primary">
-              {user?.name?.charAt(0) ?? "A"}
+              {user?.name?.charAt(0) ?? "管"}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.name ?? "Admin"}</p>
-              <p className="text-xs text-sidebar-foreground/50">Administrator</p>
+              <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.name ?? "管理員"}</p>
+              <p className="text-xs text-sidebar-foreground/50">系統管理員</p>
             </div>
             <button
               onClick={() => logout.mutate()}
               className="p-1 rounded-lg hover:bg-sidebar-accent transition-colors"
-              title="Logout"
+              title="登出"
             >
               <LogOut className="w-3.5 h-3.5 text-sidebar-foreground/50" />
             </button>

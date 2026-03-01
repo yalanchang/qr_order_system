@@ -21,10 +21,10 @@ type MenuItem = {
   sortOrder: number;
 };
 
-const CATEGORIES = ["Appetizers", "Mains", "Desserts", "Beverages"];
+const CATEGORIES = ["前菜", "主菜", "甜點", "飲品"];
 
 const emptyForm = {
-  name: "", description: "", price: "", category: "Mains",
+  name: "", description: "", price: "", category: "主菜",
   imageUrl: "", available: true, sortOrder: 0,
 };
 
@@ -38,15 +38,15 @@ export default function MenuManagement() {
   const { data: items, isLoading } = trpc.menu.listAll.useQuery();
 
   const createItem = trpc.menu.create.useMutation({
-    onSuccess: () => { utils.menu.listAll.invalidate(); utils.menu.list.invalidate(); closeDialog(); toast.success("Dish added!"); },
+    onSuccess: () => { utils.menu.listAll.invalidate(); utils.menu.list.invalidate(); closeDialog(); toast.success("菜品已新增！"); },
     onError: (e) => toast.error(e.message),
   });
   const updateItem = trpc.menu.update.useMutation({
-    onSuccess: () => { utils.menu.listAll.invalidate(); utils.menu.list.invalidate(); closeDialog(); toast.success("Dish updated!"); },
+    onSuccess: () => { utils.menu.listAll.invalidate(); utils.menu.list.invalidate(); closeDialog(); toast.success("菜品已更新！"); },
     onError: (e) => toast.error(e.message),
   });
   const deleteItem = trpc.menu.delete.useMutation({
-    onSuccess: () => { utils.menu.listAll.invalidate(); utils.menu.list.invalidate(); setDeleteConfirm(null); toast.success("Dish removed"); },
+    onSuccess: () => { utils.menu.listAll.invalidate(); utils.menu.list.invalidate(); setDeleteConfirm(null); toast.success("菜品已刪除"); },
     onError: (e) => toast.error(e.message),
   });
 
@@ -64,7 +64,7 @@ export default function MenuManagement() {
 
   const handleSubmit = () => {
     if (!form.name || !form.price || !form.category) {
-      toast.error("Name, price, and category are required");
+      toast.error("名稱、價格與分類為必填欄位");
       return;
     }
     if (editItem) {
@@ -78,7 +78,11 @@ export default function MenuManagement() {
     updateItem.mutate({ id: item.id, available: !item.available });
   };
 
-  const grouped = CATEGORIES.map(cat => ({
+  // Group by category order
+  const allCategories = items
+    ? Array.from(new Set(items.map((i: MenuItem) => i.category)))
+    : [];
+  const grouped = allCategories.map(cat => ({
     category: cat,
     items: items?.filter((i: MenuItem) => i.category === cat) ?? [],
   })).filter(g => g.items.length > 0);
@@ -89,12 +93,12 @@ export default function MenuManagement() {
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
             <UtensilsCrossed className="w-6 h-6 text-primary" />
-            Menu Management
+            菜單管理
           </h1>
-          <p className="text-muted-foreground text-sm mt-0.5">Add, edit, or remove dishes</p>
+          <p className="text-muted-foreground text-sm mt-0.5">新增、編輯或下架菜品</p>
         </div>
         <Button onClick={openCreate} className="gap-2">
-          <Plus className="w-4 h-4" /> Add Dish
+          <Plus className="w-4 h-4" /> 新增菜品
         </Button>
       </div>
 
@@ -117,19 +121,19 @@ export default function MenuManagement() {
                       <div className="flex items-center gap-2">
                         <h3 className="font-semibold text-foreground text-sm">{item.name}</h3>
                         <Badge variant={item.available ? "default" : "secondary"} className="text-xs">
-                          {item.available ? "Available" : "Unavailable"}
+                          {item.available ? "供應中" : "已下架"}
                         </Badge>
                       </div>
                       {item.description && (
                         <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{item.description}</p>
                       )}
-                      <p className="text-primary font-bold text-sm mt-1">${parseFloat(item.price).toFixed(2)}</p>
+                      <p className="text-primary font-bold text-sm mt-1">NT${parseFloat(item.price).toFixed(0)}</p>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                       <button
                         onClick={() => toggleAvailability(item)}
                         className="p-1.5 rounded-lg hover:bg-accent transition-colors"
-                        title={item.available ? "Mark unavailable" : "Mark available"}
+                        title={item.available ? "下架" : "上架"}
                       >
                         {item.available
                           ? <ToggleRight className="w-5 h-5 text-primary" />
@@ -157,24 +161,24 @@ export default function MenuManagement() {
         </div>
       )}
 
-      {/* Add/Edit Dialog */}
+      {/* 新增／編輯對話框 */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editItem ? "Edit Dish" : "Add New Dish"}</DialogTitle>
+            <DialogTitle>{editItem ? "編輯菜品" : "新增菜品"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Dish Name *</label>
-                <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="e.g. Wagyu Beef" />
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">菜品名稱 *</label>
+                <Input value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="例：松露燉飯" />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Price (HKD) *</label>
-                <Input value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="e.g. 288" type="number" />
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">價格（元）*</label>
+                <Input value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} placeholder="例：288" type="number" />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Category *</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">分類 *</label>
                 <select
                   value={form.category}
                   onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
@@ -184,20 +188,20 @@ export default function MenuManagement() {
                 </select>
               </div>
               <div className="col-span-2">
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Description</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">菜品描述</label>
                 <Textarea
                   value={form.description}
                   onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                  placeholder="Brief description of the dish..."
+                  placeholder="簡短描述食材與風味..."
                   className="resize-none h-20 text-sm"
                 />
               </div>
               <div className="col-span-2">
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Image URL</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">圖片網址</label>
                 <Input value={form.imageUrl} onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))} placeholder="https://..." />
               </div>
               <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Sort Order</label>
+                <label className="text-xs font-medium text-muted-foreground mb-1 block">排序</label>
                 <Input value={form.sortOrder} onChange={e => setForm(f => ({ ...f, sortOrder: parseInt(e.target.value) || 0 }))} type="number" />
               </div>
               <div className="flex items-end pb-1">
@@ -208,35 +212,35 @@ export default function MenuManagement() {
                     onChange={e => setForm(f => ({ ...f, available: e.target.checked }))}
                     className="w-4 h-4 rounded"
                   />
-                  <span className="text-sm text-foreground">Available</span>
+                  <span className="text-sm text-foreground">供應中</span>
                 </label>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={closeDialog}>Cancel</Button>
+            <Button variant="outline" onClick={closeDialog}>取消</Button>
             <Button onClick={handleSubmit} disabled={createItem.isPending || updateItem.isPending}>
-              {editItem ? "Save Changes" : "Add Dish"}
+              {editItem ? "儲存變更" : "新增菜品"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirm Dialog */}
+      {/* 刪除確認對話框 */}
       <Dialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Delete Dish?</DialogTitle>
+            <DialogTitle>確認刪除菜品？</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-muted-foreground">This action cannot be undone. The dish will be permanently removed from the menu.</p>
+          <p className="text-sm text-muted-foreground">此操作無法復原，菜品將從菜單中永久移除。</p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDeleteConfirm(null)}>取消</Button>
             <Button
               variant="destructive"
               onClick={() => deleteConfirm && deleteItem.mutate({ id: deleteConfirm })}
               disabled={deleteItem.isPending}
             >
-              Delete
+              確認刪除
             </Button>
           </DialogFooter>
         </DialogContent>

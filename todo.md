@@ -34,3 +34,8 @@
 - [x] Vitest: order creation procedure
 - [x] Vitest: menu CRUD procedures
 - [x] Vitest: admin role guard
+
+## 修復與中文化
+- [x] 修復 AdminLayout 巢狀 <a> 標籤錯誤
+- [x] 全介面中文化（首頁、點餐頁、管理後台）
+- [x] 菜單種子資料改為中文

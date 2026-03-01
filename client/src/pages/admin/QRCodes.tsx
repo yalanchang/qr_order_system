@@ -23,10 +23,10 @@ function QRCard({ tableNumber }: { tableNumber: number }) {
   const handleDownload = () => {
     if (!canvasRef.current) return;
     const link = document.createElement("a");
-    link.download = `table-${tableNumber}-qr.png`;
+    link.download = `桌號${tableNumber}-QR碼.png`;
     link.href = canvasRef.current.toDataURL("image/png");
     link.click();
-    toast.success(`QR code for Table ${tableNumber} downloaded`);
+    toast.success(`第 ${tableNumber} 桌 QR 碼已下載`);
   };
 
   return (
@@ -36,12 +36,12 @@ function QRCard({ tableNumber }: { tableNumber: number }) {
           <canvas ref={canvasRef} className="rounded-lg" />
         </div>
         <div className="text-center">
-          <p className="font-bold text-foreground text-lg">Table {tableNumber}</p>
+          <p className="font-bold text-foreground text-lg">第 {tableNumber} 桌</p>
           <p className="text-xs text-muted-foreground mt-0.5 break-all max-w-[200px]">{url}</p>
         </div>
         <Button variant="outline" size="sm" onClick={handleDownload} className="w-full gap-2">
           <Download className="w-3.5 h-3.5" />
-          Download PNG
+          下載 PNG
         </Button>
       </div>
     </div>
@@ -59,16 +59,16 @@ export default function QRCodesPage() {
       <div>
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <QrCode className="w-6 h-6 text-primary" />
-          QR Code Generator
+          QR 碼產生器
         </h1>
         <p className="text-muted-foreground text-sm mt-0.5">
-          Generate QR codes for each table. Customers scan to start ordering.
+          為每張桌子產生專屬 QR 碼，客人掃碼即可直接點餐。
         </p>
       </div>
 
-      {/* Controls */}
+      {/* 控制區 */}
       <div className="bg-card rounded-2xl border border-border p-5">
-        <label className="text-sm font-medium text-foreground block mb-3">Number of Tables</label>
+        <label className="text-sm font-medium text-foreground block mb-3">桌位數量</label>
         <div className="flex items-center gap-3">
           <button
             onClick={() => { const v = Math.max(1, tableCount - 1); setTableCount(v); setInputVal(String(v)); }}
@@ -95,14 +95,14 @@ export default function QRCodesPage() {
           >
             <Plus className="w-4 h-4" />
           </button>
-          <span className="text-sm text-muted-foreground ml-2">tables (max 50)</span>
+          <span className="text-sm text-muted-foreground ml-2">桌（最多 50 桌）</span>
         </div>
         <p className="text-xs text-muted-foreground mt-3">
-          Each QR code links to: <code className="bg-muted px-1 py-0.5 rounded text-xs">{window.location.origin}/order?table=N</code>
+          每個 QR 碼連結至：<code className="bg-muted px-1 py-0.5 rounded text-xs">{window.location.origin}/order?table=N</code>
         </p>
       </div>
 
-      {/* QR Grid */}
+      {/* QR 碼格狀排列 */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {tables.map(n => (
           <QRCard key={n} tableNumber={n} />

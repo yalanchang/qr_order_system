@@ -5,79 +5,73 @@ import { ChefHat, QrCode, LayoutDashboard, Star, Clock, Utensils } from "lucide-
 export default function Home() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Nav */}
+      {/* 導覽列 */}
       <nav className="border-b border-border bg-background/95 backdrop-blur sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ChefHat className="w-5 h-5 text-primary" />
-            <span className="font-bold text-foreground">Fine Dining</span>
+            <span className="font-bold text-foreground">精緻餐廳</span>
           </div>
           <Link href="/admin">
-            <a>
-              <Button variant="outline" size="sm" className="gap-2">
-                <LayoutDashboard className="w-3.5 h-3.5" />
-                Admin
-              </Button>
-            </a>
+            <Button variant="outline" size="sm" className="gap-2">
+              <LayoutDashboard className="w-3.5 h-3.5" />
+              管理後台
+            </Button>
           </Link>
         </div>
       </nav>
 
-      {/* Hero */}
+      {/* 主視覺區 */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/20 pointer-events-none" />
         <div className="max-w-5xl mx-auto px-6 py-24 text-center relative">
           <div className="inline-flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-1.5 text-sm font-medium mb-6">
             <Star className="w-3.5 h-3.5" />
-            Elegant Dining Experience
+            精緻用餐體驗
           </div>
           <h1 className="text-5xl md:text-6xl font-bold text-foreground tracking-tight mb-6 leading-tight">
-            Scan. Order.
+            掃碼。點餐。
             <br />
-            <span className="text-primary">Enjoy.</span>
+            <span className="text-primary">盡情享用。</span>
           </h1>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10">
-            A seamless QR-code ordering experience. Guests scan their table code, browse the menu, and place orders — no app, no login required.
+            無縫的 QR 碼點餐體驗。客人掃描桌號 QR 碼，即可瀏覽菜單並下單——無需下載 App，無需登入。
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/order?table=1">
-              <a>
-                <Button size="lg" className="gap-2 px-8">
-                  <QrCode className="w-4 h-4" />
-                  Try Demo (Table 1)
-                </Button>
-              </a>
+              <Button size="lg" className="gap-2 px-8">
+                <QrCode className="w-4 h-4" />
+                體驗點餐（第 1 桌）
+              </Button>
             </Link>
             <Link href="/admin">
-              <a>
-                <Button size="lg" variant="outline" className="gap-2 px-8">
-                  <LayoutDashboard className="w-4 h-4" />
-                  Admin Backend
-                </Button>
-              </a>
+              <Button size="lg" variant="outline" className="gap-2 px-8">
+                <LayoutDashboard className="w-4 h-4" />
+                進入管理後台
+              </Button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* 功能特色 */}
       <section className="max-w-5xl mx-auto px-6 py-16">
         <div className="grid md:grid-cols-3 gap-6">
           {[
             {
               icon: QrCode,
-              title: "QR Code Ordering",
-              desc: "Each table has a unique QR code. Guests scan and are taken directly to the menu — no app download needed.",
+              title: "QR 碼點餐",
+              desc: "每張桌子擁有專屬 QR 碼，客人掃碼即直達菜單，無需下載任何 App。",
             },
             {
               icon: Clock,
-              title: "Real-Time Kitchen",
-              desc: "Orders appear instantly in the kitchen display. Staff can mark orders as preparing or completed with one tap.",
+              title: "即時出餐管理",
+              desc: "訂單即時顯示於廚房介面，工作人員一鍵標記製作中或已完成。",
             },
             {
               icon: Utensils,
-              title: "Full Menu Control",
-              desc: "Admins can add, edit, or hide dishes at any time. Changes reflect immediately on the customer-facing menu.",
+              title: "靈活菜單管理",
+              desc: "管理員可隨時新增、編輯或下架菜品，變更立即反映於客人菜單。",
             },
           ].map(({ icon: Icon, title, desc }) => (
             <div key={title} className="bg-card rounded-2xl border border-border p-6">
@@ -91,16 +85,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* 使用流程 */}
       <section className="bg-primary/5 border-y border-border py-16">
         <div className="max-w-5xl mx-auto px-6">
-          <h2 className="text-2xl font-bold text-foreground text-center mb-10">How It Works</h2>
+          <h2 className="text-2xl font-bold text-foreground text-center mb-10">使用流程</h2>
           <div className="grid md:grid-cols-4 gap-6">
             {[
-              { step: "01", title: "Print QR Codes", desc: "Generate and print QR codes for each table from the admin panel." },
-              { step: "02", title: "Guest Scans", desc: "Guest scans the table QR code with their phone camera." },
-              { step: "03", title: "Browse & Order", desc: "Guest browses the menu, adds items to cart, and submits the order." },
-              { step: "04", title: "Kitchen Prepares", desc: "Order appears in the kitchen display. Staff prepares and marks complete." },
+              { step: "01", title: "列印 QR 碼", desc: "從管理後台產生各桌專屬 QR 碼並列印放置桌上。" },
+              { step: "02", title: "客人掃碼", desc: "客人使用手機相機掃描桌上的 QR 碼。" },
+              { step: "03", title: "瀏覽並點餐", desc: "客人瀏覽菜單、加入購物車並送出訂單。" },
+              { step: "04", title: "廚房出餐", desc: "訂單顯示於廚房介面，工作人員備餐後標記完成。" },
             ].map(({ step, title, desc }) => (
               <div key={step} className="text-center">
                 <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold mx-auto mb-3">
@@ -114,14 +108,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* 頁尾 */}
       <footer className="border-t border-border py-8">
         <div className="max-w-5xl mx-auto px-6 flex items-center justify-between text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <ChefHat className="w-4 h-4 text-primary" />
-            <span>Fine Dining QR Order System</span>
+            <span>精緻餐廳 QR 點餐系統</span>
           </div>
-          <span>Built with elegance</span>
+          <span>以匠心打造</span>
         </div>
       </footer>
     </div>

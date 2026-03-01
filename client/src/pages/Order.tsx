@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  addItem, incrementItem, decrementItem, removeItem,
+  addItem, incrementItem, decrementItem,
   setTableNumber, setNote, clearCart, openCart, closeCart,
   selectCartItems, selectCartTotal, selectCartCount,
   selectTableNumber, selectNote, selectIsCartOpen,
@@ -25,10 +24,9 @@ type MenuItem = {
   sortOrder: number;
 };
 
-const CATEGORY_ORDER = ["Appetizers", "Mains", "Desserts", "Beverages"];
+const CATEGORY_ORDER = ["前菜", "主菜", "甜點", "飲品", "Appetizers", "Mains", "Desserts", "Beverages"];
 
 export default function OrderPage() {
-  const [, navigate] = useLocation();
   const dispatch = useAppDispatch();
   const cartItems = useAppSelector(selectCartItems);
   const cartTotal = useAppSelector(selectCartTotal);
@@ -41,7 +39,7 @@ export default function OrderPage() {
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
 
-  // Parse table number from URL
+  // 從 URL 讀取桌號
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const table = params.get("table") || "1";
@@ -58,7 +56,7 @@ export default function OrderPage() {
       dispatch(closeCart());
     },
     onError: (err) => {
-      toast.error("Failed to place order: " + err.message);
+      toast.error("訂單送出失敗：" + err.message);
     },
   });
 
@@ -103,6 +101,7 @@ export default function OrderPage() {
     });
   };
 
+  // 訂單成功畫面
   if (orderSuccess) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
@@ -110,16 +109,16 @@ export default function OrderPage() {
           <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-primary" />
           </div>
-          <h2 className="text-2xl font-semibold text-foreground mb-2">Order Placed!</h2>
-          <p className="text-muted-foreground mb-1">Order #{orderId} · Table {tableNumber}</p>
+          <h2 className="text-2xl font-bold text-foreground mb-2">訂單已送出！</h2>
+          <p className="text-muted-foreground mb-1">訂單編號 #{orderId} · 第 {tableNumber} 桌</p>
           <p className="text-muted-foreground text-sm mb-8">
-            Your order is being prepared. Please wait at your table.
+            廚房正在為您準備，請稍候片刻。
           </p>
           <Button
             onClick={() => { setOrderSuccess(false); setOrderId(null); }}
             className="w-full"
           >
-            Order More
+            繼續點餐
           </Button>
         </div>
       </div>
@@ -128,18 +127,18 @@ export default function OrderPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+      {/* 頂部導覽列 */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ChefHat className="w-5 h-5 text-primary" />
             <div>
-              <span className="font-semibold text-foreground text-sm">Fine Dining</span>
-              <span className="text-muted-foreground text-xs ml-2">· Table {tableNumber}</span>
+              <span className="font-semibold text-foreground text-sm">精緻餐廳</span>
+              <span className="text-muted-foreground text-xs ml-2">· 第 {tableNumber} 桌</span>
             </div>
           </div>
           <button
-            onClick={() => dispatch(toggleCartAction())}
+            onClick={() => dispatch({ type: "cart/toggleCart" })}
             className="relative p-2 rounded-full hover:bg-accent transition-colors"
           >
             <ShoppingCart className="w-5 h-5 text-foreground" />
@@ -152,18 +151,18 @@ export default function OrderPage() {
         </div>
       </header>
 
-      {/* Hero */}
+      {/* 頁首橫幅 */}
       <div className="bg-gradient-to-b from-primary/8 to-transparent py-8 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-3xl font-bold text-foreground tracking-tight mb-1">Our Menu</h1>
-          <p className="text-muted-foreground text-sm">Crafted with passion, served with care</p>
+          <h1 className="text-3xl font-bold text-foreground tracking-tight mb-1">精選菜單</h1>
+          <p className="text-muted-foreground text-sm">以熱情烹調，以用心服務</p>
         </div>
       </div>
 
-      {/* Category Tabs */}
+      {/* 分類標籤列 */}
       <div className="sticky top-16 z-30 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-2xl mx-auto px-4">
-          <div className="flex gap-1 overflow-x-auto py-3 scrollbar-hide">
+          <div className="flex gap-1 overflow-x-auto py-3" style={{ scrollbarWidth: "none" }}>
             {categories.map(cat => (
               <button
                 key={cat}
@@ -181,7 +180,7 @@ export default function OrderPage() {
         </div>
       </div>
 
-      {/* Menu Items */}
+      {/* 菜品列表 */}
       <main className="max-w-2xl mx-auto px-4 py-6 pb-32">
         {isLoading ? (
           <div className="grid gap-4">
@@ -217,7 +216,7 @@ export default function OrderPage() {
                     </div>
                     <div className="flex items-center justify-between mt-2">
                       <span className="text-primary font-bold text-base">
-                        ${parseFloat(item.price).toFixed(0)}
+                        NT${parseFloat(item.price).toFixed(0)}
                       </span>
                       {qty === 0 ? (
                         <button
@@ -252,7 +251,7 @@ export default function OrderPage() {
         )}
       </main>
 
-      {/* Floating Cart Button */}
+      {/* 浮動購物車按鈕 */}
       {cartCount > 0 && !isCartOpen && (
         <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 px-4">
           <button
@@ -262,13 +261,13 @@ export default function OrderPage() {
             <span className="w-6 h-6 rounded-lg bg-primary-foreground/20 flex items-center justify-center text-xs font-bold">
               {cartCount}
             </span>
-            <span className="flex-1 text-left font-semibold">View Cart</span>
-            <span className="font-bold">${cartTotal.toFixed(0)}</span>
+            <span className="flex-1 text-left font-semibold">查看購物車</span>
+            <span className="font-bold">NT${cartTotal.toFixed(0)}</span>
           </button>
         </div>
       )}
 
-      {/* Cart Drawer */}
+      {/* 購物車抽屜 */}
       {isCartOpen && (
         <>
           <div
@@ -276,12 +275,12 @@ export default function OrderPage() {
             onClick={() => dispatch(closeCart())}
           />
           <div className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col">
-            {/* Cart Header */}
+            {/* 購物車標頭 */}
             <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
               <div className="flex items-center gap-2">
                 <Utensils className="w-4 h-4 text-primary" />
-                <h2 className="font-semibold text-foreground">Your Order</h2>
-                <Badge variant="secondary" className="text-xs">{cartCount} items</Badge>
+                <h2 className="font-semibold text-foreground">我的訂單</h2>
+                <Badge variant="secondary" className="text-xs">{cartCount} 項</Badge>
               </div>
               <button
                 onClick={() => dispatch(closeCart())}
@@ -291,7 +290,7 @@ export default function OrderPage() {
               </button>
             </div>
 
-            {/* Cart Items */}
+            {/* 購物車品項 */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
               {cartItems.map(item => (
                 <div key={item.menuItemId} className="flex items-center gap-3">
@@ -300,7 +299,7 @@ export default function OrderPage() {
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
-                    <p className="text-xs text-muted-foreground">${item.price.toFixed(0)} each</p>
+                    <p className="text-xs text-muted-foreground">NT${item.price.toFixed(0)} / 份</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <button
@@ -317,17 +316,17 @@ export default function OrderPage() {
                       <Plus className="w-3 h-3" />
                     </button>
                   </div>
-                  <span className="text-sm font-semibold text-foreground w-14 text-right">
-                    ${(item.price * item.quantity).toFixed(0)}
+                  <span className="text-sm font-semibold text-foreground w-16 text-right">
+                    NT${(item.price * item.quantity).toFixed(0)}
                   </span>
                 </div>
               ))}
 
-              {/* Note */}
+              {/* 備註 */}
               <div className="pt-2">
-                <label className="text-xs text-muted-foreground font-medium mb-1.5 block">Special requests</label>
+                <label className="text-xs text-muted-foreground font-medium mb-1.5 block">特殊需求／備註</label>
                 <Textarea
-                  placeholder="Allergies, preferences..."
+                  placeholder="過敏原、口味偏好..."
                   value={note}
                   onChange={e => dispatch(setNote(e.target.value))}
                   className="text-sm resize-none h-20 bg-background"
@@ -335,18 +334,18 @@ export default function OrderPage() {
               </div>
             </div>
 
-            {/* Cart Footer */}
+            {/* 購物車底部 */}
             <div className="px-6 pb-8 pt-4 border-t border-border space-y-3">
               <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Subtotal</span>
-                <span className="font-semibold text-foreground">${cartTotal.toFixed(2)}</span>
+                <span className="text-muted-foreground">小計</span>
+                <span className="font-semibold text-foreground">NT${cartTotal.toFixed(0)}</span>
               </div>
               <Button
                 className="w-full h-12 text-base font-semibold rounded-xl"
                 onClick={handleSubmitOrder}
                 disabled={createOrder.isPending}
               >
-                {createOrder.isPending ? "Placing Order..." : `Place Order · $${cartTotal.toFixed(2)}`}
+                {createOrder.isPending ? "送出中..." : `確認送出 · NT$${cartTotal.toFixed(0)}`}
               </Button>
             </div>
           </div>
@@ -354,9 +353,4 @@ export default function OrderPage() {
       )}
     </div>
   );
-}
-
-// Helper to avoid import cycle
-function toggleCartAction() {
-  return { type: "cart/toggleCart" as const };
 }
