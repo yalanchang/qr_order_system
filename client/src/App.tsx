@@ -1,7 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { Provider } from "react-redux";
@@ -14,14 +14,16 @@ import MenuManagement from "./pages/admin/MenuManagement";
 import QRCodesPage from "./pages/admin/QRCodes";
 
 function AdminRouter() {
+  const [location] = useLocation();
+
+  let Content: React.ComponentType = KitchenPage;
+  if (location === "/admin/menu") Content = MenuManagement;
+  else if (location === "/admin/qr") Content = QRCodesPage;
+  else if (location !== "/admin" && !location.startsWith("/admin")) Content = NotFound;
+
   return (
     <AdminLayout>
-      <Switch>
-        <Route path="/admin" component={KitchenPage} />
-        <Route path="/admin/menu" component={MenuManagement} />
-        <Route path="/admin/qr" component={QRCodesPage} />
-        <Route component={NotFound} />
-      </Switch>
+      <Content />
     </AdminLayout>
   );
 }
@@ -32,7 +34,8 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/order" component={OrderPage} />
       <Route path="/admin" component={AdminRouter} />
-      <Route path="/admin/:rest*" component={AdminRouter} />
+      <Route path="/admin/menu" component={AdminRouter} />
+      <Route path="/admin/qr" component={AdminRouter} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>

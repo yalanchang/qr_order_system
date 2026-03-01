@@ -75,3 +75,16 @@ export const orderItems = mysqlTable("order_items", {
 
 export type OrderItem = typeof orderItems.$inferSelect;
 export type InsertOrderItem = typeof orderItems.$inferInsert;
+
+// Service requests table
+export const serviceRequests = mysqlTable("service_requests", {
+  id: int("id").autoincrement().primaryKey(),
+  tableNumber: varchar("tableNumber", { length: 20 }).notNull(),
+  message: varchar("message", { length: 255 }).default("需要服務").notNull(),
+  resolved: boolean("resolved").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  resolvedAt: timestamp("resolvedAt"),
+});
+
+export type ServiceRequest = typeof serviceRequests.$inferSelect;
+export type InsertServiceRequest = typeof serviceRequests.$inferInsert;

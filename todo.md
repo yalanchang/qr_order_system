@@ -39,3 +39,11 @@
 - [x] 修復 AdminLayout 巢狀 <a> 標籤錯誤
 - [x] 全介面中文化（首頁、點餐頁、管理後台）
 - [x] 菜單種子資料改為中文
+
+## 呼叫服務員功能
+- [ ] DB Schema 新增 service_requests 表
+- [ ] tRPC API：createServiceRequest、listServiceRequests、resolveServiceRequest
+- [ ] 客人點餐頁新增「呼叫服務員」按鈕（含防重複呼叫冷卻機制）
+- [ ] 廚房介面新增服務請求通知區塊（即時輪詢）
+- [ ] 廚房介面可標記服務請求為已處理
+- [ ] Vitest：服務請求 API 測試
