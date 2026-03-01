@@ -88,17 +88,19 @@ export default function MenuManagement() {
   })).filter(g => g.items.length > 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <UtensilsCrossed className="w-6 h-6 text-primary" />
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
+            <UtensilsCrossed className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             菜單管理
           </h1>
-          <p className="text-muted-foreground text-sm mt-0.5">新增、編輯或下架菜品</p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">新增、編輯或下架菜品</p>
         </div>
-        <Button onClick={openCreate} className="gap-2">
-          <Plus className="w-4 h-4" /> 新增菜品
+        <Button onClick={openCreate} className="gap-1.5 text-sm h-9 px-3 sm:px-4">
+          <Plus className="w-4 h-4" />
+          <span className="hidden sm:inline">新增菜品</span>
+          <span className="sm:hidden">新增</span>
         </Button>
       </div>
 
@@ -113,9 +115,9 @@ export default function MenuManagement() {
               <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{category}</h2>
               <div className="grid gap-3">
                 {catItems.map((item: MenuItem) => (
-                  <div key={item.id} className="bg-card rounded-2xl border border-border flex items-center gap-4 p-4">
+                  <div key={item.id} className="bg-card rounded-2xl border border-border flex items-center gap-3 sm:gap-4 p-3 sm:p-4">
                     {item.imageUrl && (
-                      <img src={item.imageUrl} alt={item.name} className="w-16 h-16 rounded-xl object-cover flex-shrink-0" />
+                      <img src={item.imageUrl} alt={item.name} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover flex-shrink-0" />
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
@@ -129,7 +131,7 @@ export default function MenuManagement() {
                       )}
                       <p className="text-primary font-bold text-sm mt-1">NT${parseFloat(item.price).toFixed(0)}</p>
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
+                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                       <button
                         onClick={() => toggleAvailability(item)}
                         className="p-1.5 rounded-lg hover:bg-accent transition-colors"
@@ -163,7 +165,7 @@ export default function MenuManagement() {
 
       {/* 新增／編輯對話框 */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md w-[calc(100vw-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>{editItem ? "編輯菜品" : "新增菜品"}</DialogTitle>
           </DialogHeader>
@@ -228,7 +230,7 @@ export default function MenuManagement() {
 
       {/* 刪除確認對話框 */}
       <Dialog open={deleteConfirm !== null} onOpenChange={() => setDeleteConfirm(null)}>
-        <DialogContent className="max-w-sm">
+        <DialogContent className="max-w-sm w-[calc(100vw-2rem)] sm:w-full">
           <DialogHeader>
             <DialogTitle>確認刪除菜品？</DialogTitle>
           </DialogHeader>

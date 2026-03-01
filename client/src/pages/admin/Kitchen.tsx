@@ -66,38 +66,38 @@ export default function KitchenPage() {
   const preparingCount = orders?.filter((o: Order) => o.status === "preparing").length ?? 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
       {/* 頁面標題 */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            <ChefHat className="w-6 h-6 text-primary" />
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
+            <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             出餐管理
           </h1>
-          <p className="text-muted-foreground text-sm mt-0.5">即時訂單管理介面</p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">即時訂單管理介面</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2">
+        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-1.5 text-xs h-8 px-3">
           <RefreshCw className="w-3.5 h-3.5" />
-          重新整理
+          <span className="hidden sm:inline">重新整理</span>
         </Button>
       </div>
 
       {/* 統計卡片 */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4">
         {[
           { label: "待處理", count: pendingCount, color: "text-amber-600", bg: "bg-amber-50 dark:bg-amber-950/30" },
           { label: "製作中", count: preparingCount, color: "text-blue-600", bg: "bg-blue-50 dark:bg-blue-950/30" },
           { label: "今日總計", count: orders?.length ?? 0, color: "text-primary", bg: "bg-primary/5" },
         ].map(stat => (
-          <div key={stat.label} className={`rounded-2xl p-4 ${stat.bg}`}>
-            <p className={`text-2xl font-bold ${stat.color}`}>{stat.count}</p>
+          <div key={stat.label} className={`rounded-2xl p-3 sm:p-4 ${stat.bg}`}>
+            <p className={`text-xl sm:text-2xl font-bold ${stat.color}`}>{stat.count}</p>
             <p className="text-xs text-muted-foreground mt-0.5">{stat.label}</p>
           </div>
         ))}
       </div>
 
       {/* 篩選標籤 */}
-      <div className="flex gap-2">
+      <div className="flex gap-2 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
         {([
           { key: "pending", label: "待處理" },
           { key: "preparing", label: "製作中" },
@@ -106,7 +106,7 @@ export default function KitchenPage() {
           <button
             key={key}
             onClick={() => setFilter(key)}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+            className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
               filter === key
                 ? "bg-primary text-primary-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-accent"
@@ -119,19 +119,19 @@ export default function KitchenPage() {
 
       {/* 訂單列表 */}
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
           {[...Array(6)].map((_, i) => (
-            <div key={i} className="h-48 rounded-2xl bg-muted animate-pulse" />
+            <div key={i} className="h-44 rounded-2xl bg-muted animate-pulse" />
           ))}
         </div>
       ) : orders?.length === 0 ? (
-        <div className="text-center py-20">
-          <UtensilsCrossed className="w-12 h-12 text-muted-foreground/40 mx-auto mb-4" />
+        <div className="text-center py-16 sm:py-20">
+          <UtensilsCrossed className="w-10 h-10 sm:w-12 sm:h-12 text-muted-foreground/40 mx-auto mb-4" />
           <p className="text-muted-foreground font-medium">目前沒有訂單</p>
           <p className="text-muted-foreground text-sm mt-1">新訂單將自動顯示在這裡</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
           {orders?.map((order: Order) => (
             <div
               key={order.id}
@@ -153,7 +153,7 @@ export default function KitchenPage() {
                   <span className="font-bold text-foreground text-sm">{order.tableNumber} 桌</span>
                   <span className="text-muted-foreground text-xs">#{order.id}</span>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 sm:gap-2">
                   <Clock className="w-3 h-3 text-muted-foreground" />
                   <span className="text-xs text-muted-foreground">{timeAgo(order.createdAt)}</span>
                   <Badge
@@ -173,7 +173,7 @@ export default function KitchenPage() {
                       <span className="font-semibold text-primary">{item.quantity}×</span>{" "}
                       {item.menuItemName}
                     </span>
-                    <span className="text-muted-foreground">${parseFloat(item.subtotal).toFixed(0)}</span>
+                    <span className="text-muted-foreground">NT${parseFloat(item.subtotal).toFixed(0)}</span>
                   </div>
                 ))}
                 {order.note && (
@@ -184,8 +184,8 @@ export default function KitchenPage() {
               </div>
 
               {/* 訂單底部操作 */}
-              <div className="px-4 py-3 border-t border-border flex items-center justify-between">
-                <span className="font-bold text-foreground">${parseFloat(order.totalAmount).toFixed(0)}</span>
+              <div className="px-4 py-3 border-t border-border flex items-center justify-between gap-2">
+                <span className="font-bold text-foreground text-sm">NT${parseFloat(order.totalAmount).toFixed(0)}</span>
                 <div className="flex gap-2">
                   {order.status === "pending" && (
                     <Button
@@ -193,7 +193,7 @@ export default function KitchenPage() {
                       variant="outline"
                       onClick={() => handleStatusChange(order.id, "preparing")}
                       disabled={updateStatus.isPending}
-                      className="text-xs h-7 px-3"
+                      className="text-xs h-8 px-3"
                     >
                       開始製作
                     </Button>
@@ -203,7 +203,7 @@ export default function KitchenPage() {
                       size="sm"
                       onClick={() => handleStatusChange(order.id, "completed")}
                       disabled={updateStatus.isPending}
-                      className="text-xs h-7 px-3 gap-1"
+                      className="text-xs h-8 px-3 gap-1"
                     >
                       <CheckCircle2 className="w-3 h-3" />
                       完成出餐

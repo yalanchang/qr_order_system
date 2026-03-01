@@ -1,20 +1,23 @@
 import { useAuth } from "@/_core/hooks/useAuth";
 import { getLoginUrl } from "@/const";
-import { ChefHat, UtensilsCrossed, QrCode, LayoutDashboard, LogOut } from "lucide-react";
+import { ChefHat, UtensilsCrossed, QrCode, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
+import { useState } from "react";
 
 const NAV_ITEMS = [
   { href: "/admin", label: "出餐管理", icon: ChefHat },
   { href: "/admin/menu", label: "菜單管理", icon: UtensilsCrossed },
-  { href: "/admin/qr", label: "QR 碼產生", icon: QrCode },
+  { href: "/admin/qr", label: "QR 碼", icon: QrCode },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, loading, isAuthenticated } = useAuth();
   const [location] = useLocation();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const logout = trpc.auth.logout.useMutation({
     onSuccess: () => { window.location.href = "/"; },
     onError: () => toast.error("登出失敗"),
@@ -31,7 +34,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   if (!isAuthenticated || user?.role !== "admin") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="text-center max-w-sm">
+        <div className="text-center max-w-sm w-full">
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
             <LayoutDashboard className="w-8 h-8 text-primary" />
           </div>
@@ -43,7 +46,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </p>
           {!isAuthenticated && (
             <Button
-              className="w-full"
+              className="w-full h-12 text-base"
               onClick={() => { window.location.href = getLoginUrl(); }}
             >
               使用 Manus 帳號登入
@@ -55,9 +58,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Sidebar */}
-      <aside className="w-60 bg-sidebar text-sidebar-foreground flex flex-col flex-shrink-0">
+    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+      {/* ── 桌面版側邊欄 ── */}
+      <aside className="hidden md:flex w-60 bg-sidebar text-sidebar-foreground flex-col flex-shrink-0 min-h-screen">
         {/* Logo */}
         <div className="px-6 py-6 border-b border-sidebar-border">
           <div className="flex items-center gap-2.5">
@@ -93,7 +96,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         {/* User */}
         <div className="px-3 py-4 border-t border-sidebar-border">
           <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
-            <div className="w-7 h-7 rounded-full bg-sidebar-primary/20 flex items-center justify-center text-xs font-bold text-sidebar-primary">
+            <div className="w-7 h-7 rounded-full bg-sidebar-primary/20 flex items-center justify-center text-xs font-bold text-sidebar-primary flex-shrink-0">
               {user?.name?.charAt(0) ?? "管"}
             </div>
             <div className="flex-1 min-w-0">
@@ -111,12 +114,91 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
       </aside>
 
-      {/* Main */}
+      {/* ── 手機版頂部導覽列 ── */}
+      <header className="md:hidden sticky top-0 z-40 bg-sidebar text-sidebar-foreground border-b border-sidebar-border">
+        <div className="flex items-center justify-between px-4 h-14">
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-sidebar-primary/20 flex items-center justify-center">
+              <ChefHat className="w-3.5 h-3.5 text-sidebar-primary" />
+            </div>
+            <div>
+              <p className="font-bold text-sidebar-foreground text-sm leading-none">精緻餐廳</p>
+              <p className="text-xs text-sidebar-foreground/50 leading-none mt-0.5">管理後台</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-sidebar-foreground/60 max-w-[80px] truncate">{user?.name}</span>
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-lg hover:bg-sidebar-accent transition-colors"
+              aria-label="選單"
+            >
+              {mobileMenuOpen ? <X className="w-5 h-5 text-sidebar-foreground" /> : <Menu className="w-5 h-5 text-sidebar-foreground" />}
+            </button>
+          </div>
+        </div>
+
+        {/* 手機版下拉選單 */}
+        {mobileMenuOpen && (
+          <div className="bg-sidebar border-t border-sidebar-border px-3 py-2 space-y-1">
+            {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+              const isActive = location === href;
+              return (
+                <Link key={href} href={href}>
+                  <div
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
+                      isActive
+                        ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                        : "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {label}
+                  </div>
+                </Link>
+              );
+            })}
+            <div className="pt-1 pb-1 border-t border-sidebar-border mt-1">
+              <button
+                onClick={() => logout.mutate()}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all"
+              >
+                <LogOut className="w-4 h-4" />
+                登出
+              </button>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* ── 主內容區 ── */}
       <main className="flex-1 overflow-auto">
-        <div className="max-w-6xl mx-auto px-6 py-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-8 pb-8">
           {children}
         </div>
       </main>
+
+      {/* ── 手機版底部導覽列 ── */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-30 bg-sidebar border-t border-sidebar-border">
+        <div className="flex items-center justify-around h-16 px-2">
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const isActive = location === href;
+            return (
+              <Link key={href} href={href}>
+                <div className={`flex flex-col items-center gap-1 px-4 py-2 rounded-xl transition-all cursor-pointer ${
+                  isActive
+                    ? "text-sidebar-primary"
+                    : "text-sidebar-foreground/50 hover:text-sidebar-foreground"
+                }`}>
+                  <Icon className={`w-5 h-5 ${isActive ? "text-sidebar-primary" : ""}`} />
+                  <span className="text-[10px] font-medium leading-none">{label}</span>
+                </div>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </div>
   );
 }

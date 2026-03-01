@@ -105,7 +105,7 @@ export default function OrderPage() {
   if (orderSuccess) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="text-center max-w-sm mx-auto">
+        <div className="text-center max-w-sm mx-auto w-full">
           <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-6">
             <CheckCircle className="w-10 h-10 text-primary" />
           </div>
@@ -116,7 +116,7 @@ export default function OrderPage() {
           </p>
           <Button
             onClick={() => { setOrderSuccess(false); setOrderId(null); }}
-            className="w-full"
+            className="w-full h-12 text-base"
           >
             繼續點餐
           </Button>
@@ -129,7 +129,7 @@ export default function OrderPage() {
     <div className="min-h-screen bg-background">
       {/* 頂部導覽列 */}
       <header className="sticky top-0 z-40 bg-background/95 backdrop-blur border-b border-border">
-        <div className="max-w-2xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <ChefHat className="w-5 h-5 text-primary" />
             <div>
@@ -140,11 +140,12 @@ export default function OrderPage() {
           <button
             onClick={() => dispatch({ type: "cart/toggleCart" })}
             className="relative p-2 rounded-full hover:bg-accent transition-colors"
+            aria-label="購物車"
           >
             <ShoppingCart className="w-5 h-5 text-foreground" />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center font-medium">
-                {cartCount}
+                {cartCount > 9 ? "9+" : cartCount}
               </span>
             )}
           </button>
@@ -152,17 +153,17 @@ export default function OrderPage() {
       </header>
 
       {/* 頁首橫幅 */}
-      <div className="bg-gradient-to-b from-primary/8 to-transparent py-8 px-4">
+      <div className="bg-gradient-to-b from-primary/8 to-transparent py-6 px-4">
         <div className="max-w-2xl mx-auto text-center">
-          <h1 className="text-3xl font-bold text-foreground tracking-tight mb-1">精選菜單</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground tracking-tight mb-1">精選菜單</h1>
           <p className="text-muted-foreground text-sm">以熱情烹調，以用心服務</p>
         </div>
       </div>
 
       {/* 分類標籤列 */}
-      <div className="sticky top-16 z-30 bg-background/95 backdrop-blur border-b border-border">
+      <div className="sticky top-14 z-30 bg-background/95 backdrop-blur border-b border-border">
         <div className="max-w-2xl mx-auto px-4">
-          <div className="flex gap-1 overflow-x-auto py-3" style={{ scrollbarWidth: "none" }}>
+          <div className="flex gap-1.5 overflow-x-auto py-3" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
             {categories.map(cat => (
               <button
                 key={cat}
@@ -181,24 +182,24 @@ export default function OrderPage() {
       </div>
 
       {/* 菜品列表 */}
-      <main className="max-w-2xl mx-auto px-4 py-6 pb-32">
+      <main className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 pb-36">
         {isLoading ? (
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {[...Array(4)].map((_, i) => (
-              <div key={i} className="h-32 rounded-2xl bg-muted animate-pulse" />
+              <div key={i} className="h-28 sm:h-32 rounded-2xl bg-muted animate-pulse" />
             ))}
           </div>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {filteredItems.map((item: MenuItem) => {
               const qty = getItemQty(item.id);
               return (
                 <div
                   key={item.id}
-                  className="menu-card bg-card rounded-2xl border border-border overflow-hidden flex"
+                  className="bg-card rounded-2xl border border-border overflow-hidden flex"
                 >
                   {item.imageUrl && (
-                    <div className="w-28 h-28 flex-shrink-0">
+                    <div className="w-24 sm:w-28 h-24 sm:h-28 flex-shrink-0">
                       <img
                         src={item.imageUrl}
                         alt={item.name}
@@ -207,7 +208,7 @@ export default function OrderPage() {
                       />
                     </div>
                   )}
-                  <div className="flex-1 p-4 flex flex-col justify-between min-w-0">
+                  <div className="flex-1 p-3 sm:p-4 flex flex-col justify-between min-w-0">
                     <div>
                       <h3 className="font-semibold text-foreground text-sm leading-tight">{item.name}</h3>
                       {item.description && (
@@ -221,7 +222,8 @@ export default function OrderPage() {
                       {qty === 0 ? (
                         <button
                           onClick={() => handleAddItem(item)}
-                          className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors shadow-sm"
+                          className="w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors shadow-sm active:scale-95"
+                          aria-label={`加入 ${item.name}`}
                         >
                           <Plus className="w-4 h-4" />
                         </button>
@@ -229,14 +231,14 @@ export default function OrderPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => dispatch(decrementItem(item.id))}
-                            className="w-7 h-7 rounded-full border border-border flex items-center justify-center hover:bg-accent transition-colors"
+                            className="w-7 h-7 rounded-full border border-border flex items-center justify-center hover:bg-accent transition-colors active:scale-95"
                           >
                             <Minus className="w-3 h-3" />
                           </button>
                           <span className="w-5 text-center font-semibold text-sm text-foreground">{qty}</span>
                           <button
                             onClick={() => dispatch(incrementItem(item.id))}
-                            className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors"
+                            className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center hover:bg-primary/90 transition-colors active:scale-95"
                           >
                             <Plus className="w-3 h-3" />
                           </button>
@@ -256,13 +258,13 @@ export default function OrderPage() {
         <div className="fixed bottom-6 left-0 right-0 flex justify-center z-40 px-4">
           <button
             onClick={() => dispatch(openCart())}
-            className="bg-primary text-primary-foreground rounded-2xl px-6 py-3.5 flex items-center gap-3 shadow-2xl hover:bg-primary/90 transition-all w-full max-w-sm"
+            className="bg-primary text-primary-foreground rounded-2xl px-5 py-3.5 flex items-center gap-3 shadow-2xl hover:bg-primary/90 transition-all w-full max-w-sm active:scale-[0.98]"
           >
-            <span className="w-6 h-6 rounded-lg bg-primary-foreground/20 flex items-center justify-center text-xs font-bold">
-              {cartCount}
+            <span className="w-6 h-6 rounded-lg bg-primary-foreground/20 flex items-center justify-center text-xs font-bold flex-shrink-0">
+              {cartCount > 9 ? "9+" : cartCount}
             </span>
-            <span className="flex-1 text-left font-semibold">查看購物車</span>
-            <span className="font-bold">NT${cartTotal.toFixed(0)}</span>
+            <span className="flex-1 text-left font-semibold text-sm sm:text-base">查看購物車</span>
+            <span className="font-bold text-sm sm:text-base">NT${cartTotal.toFixed(0)}</span>
           </button>
         </div>
       )}
@@ -274,9 +276,14 @@ export default function OrderPage() {
             className="fixed inset-0 bg-black/40 z-50 backdrop-blur-sm"
             onClick={() => dispatch(closeCart())}
           />
-          <div className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl shadow-2xl max-h-[85vh] flex flex-col">
+          <div className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-3xl shadow-2xl max-h-[90vh] flex flex-col">
+            {/* 拖曳指示條 */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-10 h-1 rounded-full bg-muted-foreground/30" />
+            </div>
+
             {/* 購物車標頭 */}
-            <div className="flex items-center justify-between px-6 pt-6 pb-4 border-b border-border">
+            <div className="flex items-center justify-between px-5 sm:px-6 pt-3 pb-4 border-b border-border">
               <div className="flex items-center gap-2">
                 <Utensils className="w-4 h-4 text-primary" />
                 <h2 className="font-semibold text-foreground">我的訂單</h2>
@@ -285,38 +292,39 @@ export default function OrderPage() {
               <button
                 onClick={() => dispatch(closeCart())}
                 className="p-1.5 rounded-full hover:bg-accent transition-colors"
+                aria-label="關閉購物車"
               >
                 <X className="w-4 h-4 text-muted-foreground" />
               </button>
             </div>
 
             {/* 購物車品項 */}
-            <div className="flex-1 overflow-y-auto px-6 py-4 space-y-3">
+            <div className="flex-1 overflow-y-auto px-5 sm:px-6 py-4 space-y-3" style={{ WebkitOverflowScrolling: "touch" }}>
               {cartItems.map(item => (
                 <div key={item.menuItemId} className="flex items-center gap-3">
                   {item.imageUrl && (
-                    <img src={item.imageUrl} alt={item.name} className="w-12 h-12 rounded-xl object-cover flex-shrink-0" />
+                    <img src={item.imageUrl} alt={item.name} className="w-11 h-11 sm:w-12 sm:h-12 rounded-xl object-cover flex-shrink-0" />
                   )}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{item.name}</p>
                     <p className="text-xs text-muted-foreground">NT${item.price.toFixed(0)} / 份</p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={() => dispatch(decrementItem(item.menuItemId))}
-                      className="w-6 h-6 rounded-full border border-border flex items-center justify-center hover:bg-accent"
+                      className="w-7 h-7 rounded-full border border-border flex items-center justify-center hover:bg-accent active:scale-95"
                     >
                       <Minus className="w-3 h-3" />
                     </button>
-                    <span className="w-4 text-center text-sm font-semibold">{item.quantity}</span>
+                    <span className="w-5 text-center text-sm font-semibold">{item.quantity}</span>
                     <button
                       onClick={() => dispatch(incrementItem(item.menuItemId))}
-                      className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center"
+                      className="w-7 h-7 rounded-full bg-primary text-primary-foreground flex items-center justify-center active:scale-95"
                     >
                       <Plus className="w-3 h-3" />
                     </button>
                   </div>
-                  <span className="text-sm font-semibold text-foreground w-16 text-right">
+                  <span className="text-sm font-semibold text-foreground w-14 sm:w-16 text-right flex-shrink-0">
                     NT${(item.price * item.quantity).toFixed(0)}
                   </span>
                 </div>
@@ -335,13 +343,13 @@ export default function OrderPage() {
             </div>
 
             {/* 購物車底部 */}
-            <div className="px-6 pb-8 pt-4 border-t border-border space-y-3">
+            <div className="px-5 sm:px-6 pb-8 pt-4 border-t border-border space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">小計</span>
                 <span className="font-semibold text-foreground">NT${cartTotal.toFixed(0)}</span>
               </div>
               <Button
-                className="w-full h-12 text-base font-semibold rounded-xl"
+                className="w-full h-12 text-base font-semibold rounded-xl active:scale-[0.98]"
                 onClick={handleSubmitOrder}
                 disabled={createOrder.isPending}
               >

@@ -12,8 +12,9 @@ function QRCard({ tableNumber }: { tableNumber: number }) {
 
   useEffect(() => {
     if (canvasRef.current) {
+      const isMobile = window.innerWidth < 640;
       QRCode.toCanvas(canvasRef.current, url, {
-        width: 200,
+        width: isMobile ? 140 : 180,
         margin: 2,
         color: { dark: "#2C1810", light: "#FDFAF6" },
       });
@@ -31,17 +32,17 @@ function QRCard({ tableNumber }: { tableNumber: number }) {
 
   return (
     <div className="bg-card rounded-2xl border border-border overflow-hidden">
-      <div className="p-6 flex flex-col items-center gap-4">
+      <div className="p-3 sm:p-5 flex flex-col items-center gap-3">
         <div className="bg-[#FDFAF6] p-3 rounded-2xl shadow-inner">
           <canvas ref={canvasRef} className="rounded-lg" />
         </div>
         <div className="text-center">
-          <p className="font-bold text-foreground text-lg">第 {tableNumber} 桌</p>
-          <p className="text-xs text-muted-foreground mt-0.5 break-all max-w-[200px]">{url}</p>
+          <p className="font-bold text-foreground text-sm sm:text-base">第 {tableNumber} 桌</p>
+          <p className="text-xs text-muted-foreground mt-0.5 break-all max-w-[140px] sm:max-w-[180px] hidden sm:block">{url}</p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleDownload} className="w-full gap-2">
+        <Button variant="outline" size="sm" onClick={handleDownload} className="w-full gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
           <Download className="w-3.5 h-3.5" />
-          下載 PNG
+          下載
         </Button>
       </div>
     </div>
@@ -55,19 +56,19 @@ export default function QRCodesPage() {
   const tables = Array.from({ length: tableCount }, (_, i) => i + 1);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
       <div>
-        <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-          <QrCode className="w-6 h-6 text-primary" />
+        <h1 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2">
+          <QrCode className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
           QR 碼產生器
         </h1>
-        <p className="text-muted-foreground text-sm mt-0.5">
+        <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">
           為每張桌子產生專屬 QR 碼，客人掃碼即可直接點餐。
         </p>
       </div>
 
       {/* 控制區 */}
-      <div className="bg-card rounded-2xl border border-border p-5">
+      <div className="bg-card rounded-2xl border border-border p-4 sm:p-5">
         <label className="text-sm font-medium text-foreground block mb-3">桌位數量</label>
         <div className="flex items-center gap-3">
           <button
@@ -95,7 +96,7 @@ export default function QRCodesPage() {
           >
             <Plus className="w-4 h-4" />
           </button>
-          <span className="text-sm text-muted-foreground ml-2">桌（最多 50 桌）</span>
+          <span className="text-xs sm:text-sm text-muted-foreground ml-1 sm:ml-2">桌</span>
         </div>
         <p className="text-xs text-muted-foreground mt-3">
           每個 QR 碼連結至：<code className="bg-muted px-1 py-0.5 rounded text-xs">{window.location.origin}/order?table=N</code>
@@ -103,7 +104,7 @@ export default function QRCodesPage() {
       </div>
 
       {/* QR 碼格狀排列 */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         {tables.map(n => (
           <QRCard key={n} tableNumber={n} />
         ))}
