@@ -19,7 +19,6 @@ function AdminRouter() {
   let Content: React.ComponentType = KitchenPage;
   if (location === "/admin/menu") Content = MenuManagement;
   else if (location === "/admin/qr") Content = QRCodesPage;
-  else if (location !== "/admin" && !location.startsWith("/admin")) Content = NotFound;
 
   return (
     <AdminLayout>
@@ -33,9 +32,12 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/order" component={OrderPage} />
+      {/* Explicit admin routes registered so Manus runtime recognises them */}
       <Route path="/admin" component={AdminRouter} />
       <Route path="/admin/menu" component={AdminRouter} />
       <Route path="/admin/qr" component={AdminRouter} />
+      {/* Wildcard catch-all for any other /admin/* paths */}
+      <Route path="/admin/:rest*" component={AdminRouter} />
       <Route path="/404" component={NotFound} />
       <Route component={NotFound} />
     </Switch>
