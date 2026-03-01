@@ -1,0 +1,58 @@
+{
+  "query": "SELECT id, displayId, tableNumber, status FROM orders ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute SELECT id, displayId, tableNumber, status FROM orders ORDER BY id;",
+  "rows": [
+    {
+      "id": "60001",
+      "displayId": "1",
+      "tableNumber": "1",
+      "status": "pending"
+    },
+    {
+      "id": "60002",
+      "displayId": "2",
+      "tableNumber": "1",
+      "status": "pending"
+    },
+    {
+      "id": "60003",
+      "displayId": "3",
+      "tableNumber": "1",
+      "status": "pending"
+    },
+    {
+      "id": "60004",
+      "displayId": "4",
+      "tableNumber": "1",
+      "status": "pending"
+    },
+    {
+      "id": "60005",
+      "displayId": "NULL",
+      "tableNumber": "1",
+      "status": "pending"
+    },
+    {
+      "id": "60006",
+      "displayId": "NULL",
+      "tableNumber": "1",
+      "status": "pending"
+    },
+    {
+      "id": "60007",
+      "displayId": "NULL",
+      "tableNumber": "1",
+      "status": "pending"
+    },
+    {
+      "id": "60008",
+      "displayId": "8",
+      "tableNumber": "1",
+      "status": "pending"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tdisplayId\ttableNumber\tstatus\n60001\t1\t1\tpending\n60002\t2\t1\tpending\n60003\t3\t1\tpending\n60004\t4\t1\tpending\n60005\tNULL\t1\tpending\n60006\tNULL\t1\tpending\n60007\tNULL\t1\tpending\n60008\t8\t1\tpending\n",
+  "stderr": "",
+  "execution_time_ms": 1602
+}

@@ -68,8 +68,23 @@ function playNotificationSound() {
 export default function KitchenPage() {
   const [filter, setFilter] = useState<"pending" | "preparing" | "all">("pending");
   const [muted, setMuted] = useState(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const prevOrderIdsRef = useRef<Set<number> | null>(null);
   const isFirstLoadRef = useRef(true);
+
+  // 解鎖瀏覽器 AudioContext（需使用者互動後才能播音）
+  const unlockAudio = () => {
+    if (audioUnlocked) return;
+    try {
+      const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+      const buf = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+      setAudioUnlocked(true);
+    } catch { /* ignore */ }
+  };
   const utils = trpc.useUtils();
 
   const { data: orders, isLoading, refetch } = trpc.order.list.useQuery(
@@ -135,7 +150,14 @@ export default function KitchenPage() {
   const preparingCount = orders?.filter((o: Order) => o.status === "preparing").length ?? 0;
 
   return (
-    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0">
+    <div className="space-y-4 sm:space-y-6 pb-20 md:pb-0" onClick={unlockAudio}>
+      {/* 聲音解鎖提示 */}
+      {!audioUnlocked && !muted && (
+        <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-400 text-xs">
+          <Volume2 className="w-3.5 h-3.5 flex-shrink-0" />
+          <span>點擊頁面任意位置以啟用新訂單提示音</span>
+        </div>
+      )}
       {/* 頁面標題 */}
       <div className="flex items-center justify-between">
         <div>
@@ -149,6 +171,7 @@ export default function KitchenPage() {
           {/* 靜音開關 */}
           <button
             onClick={() => {
+              unlockAudio();
               setMuted(m => !m);
               toast(muted ? "🔔 提示音已開啟" : "🔕 提示音已靜音");
             }}

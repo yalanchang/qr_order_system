@@ -101,9 +101,9 @@ export async function createOrder(order: InsertOrder, items: Omit<InsertOrderIte
   const db = await getDb();
   if (!db) throw new Error("DB not available");
 
-  // 計算下一個 displayId（從 1 開始遞增）
-  const [countResult] = await db.select({ count: sql<number>`COUNT(*)` }).from(orders);
-  const nextDisplayId = (countResult?.count ?? 0) + 1;
+  // 計算下一個 displayId（從 1 開始遞增，用 MAX 避免 null 值干擾）
+  const [maxResult] = await db.select({ maxId: sql<number>`COALESCE(MAX(displayId), 0)` }).from(orders);
+  const nextDisplayId = (maxResult?.maxId ?? 0) + 1;
 
   const [result] = await db.insert(orders).values({ ...order, displayId: nextDisplayId }).$returningId();
   const orderId = result.id;
