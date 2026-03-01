@@ -1,0 +1,22 @@
+{
+  "query": "SELECT DISTINCT category FROM menu_items;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute SELECT DISTINCT category FROM menu_items;",
+  "rows": [
+    {
+      "category": "前菜"
+    },
+    {
+      "category": "飲品"
+    },
+    {
+      "category": "甜點"
+    },
+    {
+      "category": "主菜"
+    }
+  ],
+  "messages": [],
+  "stdout": "category\n前菜\n飲品\n甜點\n主菜\n",
+  "stderr": "",
+  "execution_time_ms": 1576
+}

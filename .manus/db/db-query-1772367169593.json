@@ -1,0 +1,9 @@
+{
+  "query": "\nUPDATE menu_items SET category = '前菜' WHERE category = 'Appetizers';\nUPDATE menu_items SET category = '主菜' WHERE category = 'Mains';\nUPDATE menu_items SET category = '甜點' WHERE category = 'Desserts';\nUPDATE menu_items SET category = '飲品' WHERE category = 'Beverages';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute \nUPDATE menu_items SET category = '前菜' WHERE category = 'Appetizers';\nUPDATE menu_items SET category = '主菜' WHERE category = 'Mains';\nUPDATE menu_items SET category = '甜點' WHERE category = 'Desserts';\nUPDATE menu_items SET category = '飲品' WHERE category = 'Beverages';\n",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2202
+}
