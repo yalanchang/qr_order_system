@@ -1,0 +1,82 @@
+{
+  "query": "SELECT id, name, description, category FROM menu_items ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute SELECT id, name, description, category FROM menu_items ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "Truffle Arancini",
+      "description": "Crispy risotto balls with black truffle and parmesan",
+      "category": "Appetizers"
+    },
+    {
+      "id": "2",
+      "name": "Burrata Caprese",
+      "description": "Fresh burrata, heirloom tomatoes, basil oil",
+      "category": "Appetizers"
+    },
+    {
+      "id": "3",
+      "name": "Seared Foie Gras",
+      "description": "Pan-seared foie gras with brioche and fig jam",
+      "category": "Appetizers"
+    },
+    {
+      "id": "4",
+      "name": "Wagyu Beef Tenderloin",
+      "description": "A5 Wagyu, roasted garlic, seasonal vegetables",
+      "category": "Mains"
+    },
+    {
+      "id": "5",
+      "name": "Pan-Seared Sea Bass",
+      "description": "Mediterranean sea bass, saffron beurre blanc, asparagus",
+      "category": "Mains"
+    },
+    {
+      "id": "6",
+      "name": "Lobster Thermidor",
+      "description": "Half Maine lobster, cognac cream sauce, gruyère",
+      "category": "Mains"
+    },
+    {
+      "id": "7",
+      "name": "Mushroom Risotto",
+      "description": "Porcini, truffle oil, aged parmesan",
+      "category": "Mains"
+    },
+    {
+      "id": "8",
+      "name": "Chocolate Fondant",
+      "description": "Warm dark chocolate, vanilla bean ice cream",
+      "category": "Desserts"
+    },
+    {
+      "id": "9",
+      "name": "Crème Brûlée",
+      "description": "Classic vanilla custard with caramelised sugar",
+      "category": "Desserts"
+    },
+    {
+      "id": "10",
+      "name": "Sparkling Water",
+      "description": "San Pellegrino 750ml",
+      "category": "Beverages"
+    },
+    {
+      "id": "11",
+      "name": "House Wine (Glass)",
+      "description": "Curated selection, red or white",
+      "category": "Beverages"
+    },
+    {
+      "id": "12",
+      "name": "Artisan Coffee",
+      "description": "Single origin espresso or filter",
+      "category": "Beverages"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tdescription\tcategory\n1\tTruffle Arancini\tCrispy risotto balls with black truffle and parmesan\tAppetizers\n2\tBurrata Caprese\tFresh burrata, heirloom tomatoes, basil oil\tAppetizers\n3\tSeared Foie Gras\tPan-seared foie gras with brioche and fig jam\tAppetizers\n4\tWagyu Beef Tenderloin\tA5 Wagyu, roasted garlic, seasonal vegetables\tMains\n5\tPan-Seared Sea Bass\tMediterranean sea bass, saffron beurre blanc, asparagus\tMains\n6\tLobster Thermidor\tHalf Maine lobster, cognac cream sauce, gruyère\tMains\n7\tMushroom Risotto\tPorcini, truffle oil, aged parmesan\tMains\n8\tChocolate Fondant\tWarm dark chocolate, vanilla bean ice cream\tDesserts\n9\tCrème Brûlée\tClassic vanilla custard with caramelised sugar\tDesserts\n10\tSparkling Water\tSan Pellegrino 750ml\tBeverages\n11\tHouse Wine (Glass)\tCurated selection, red or white\tBeverages\n12\tArtisan Coffee\tSingle origin espresso or filter\tBeverages\n",
+  "stderr": "",
+  "execution_time_ms": 1511
+}

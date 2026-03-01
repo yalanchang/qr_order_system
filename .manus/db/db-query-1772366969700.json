@@ -1,0 +1,70 @@
+{
+  "query": "SELECT id, name, category FROM menu_items ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute SELECT id, name, category FROM menu_items ORDER BY id;",
+  "rows": [
+    {
+      "id": "1",
+      "name": "松露野菇濃湯",
+      "category": "Appetizers"
+    },
+    {
+      "id": "2",
+      "name": "鮮蝦酪梨塔",
+      "category": "Appetizers"
+    },
+    {
+      "id": "3",
+      "name": "法式洋蔥湯",
+      "category": "Appetizers"
+    },
+    {
+      "id": "4",
+      "name": "和牛菲力牛排",
+      "category": "Mains"
+    },
+    {
+      "id": "5",
+      "name": "龍蝦義大利麵",
+      "category": "Mains"
+    },
+    {
+      "id": "6",
+      "name": "慢燉羊膝",
+      "category": "Mains"
+    },
+    {
+      "id": "7",
+      "name": "香煎鮭魚佐青醬",
+      "category": "Mains"
+    },
+    {
+      "id": "8",
+      "name": "比利時巧克力熔岩蛋糕",
+      "category": "Desserts"
+    },
+    {
+      "id": "9",
+      "name": "法式焦糖布丁",
+      "category": "Desserts"
+    },
+    {
+      "id": "10",
+      "name": "季節水果塔",
+      "category": "Beverages"
+    },
+    {
+      "id": "11",
+      "name": "手工現榨果汁",
+      "category": "Beverages"
+    },
+    {
+      "id": "12",
+      "name": "精選紅酒",
+      "category": "Beverages"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\tname\tcategory\n1\t松露野菇濃湯\tAppetizers\n2\t鮮蝦酪梨塔\tAppetizers\n3\t法式洋蔥湯\tAppetizers\n4\t和牛菲力牛排\tMains\n5\t龍蝦義大利麵\tMains\n6\t慢燉羊膝\tMains\n7\t香煎鮭魚佐青醬\tMains\n8\t比利時巧克力熔岩蛋糕\tDesserts\n9\t法式焦糖布丁\tDesserts\n10\t季節水果塔\tBeverages\n11\t手工現榨果汁\tBeverages\n12\t精選紅酒\tBeverages\n",
+  "stderr": "",
+  "execution_time_ms": 1516
+}
