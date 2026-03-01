@@ -1,0 +1,13 @@
+{
+  "query": "SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute SELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders';",
+  "rows": [
+    {
+      "AUTO_INCREMENT": "30004"
+    }
+  ],
+  "messages": [],
+  "stdout": "AUTO_INCREMENT\n30004\n",
+  "stderr": "",
+  "execution_time_ms": 1546
+}

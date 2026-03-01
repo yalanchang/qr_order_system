@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Clock, CheckCircle2, ChefHat, RefreshCw, UtensilsCrossed } from "lucide-react";
+import { Clock, CheckCircle2, ChefHat, RefreshCw, UtensilsCrossed, Volume2, VolumeX } from "lucide-react";
 
 type OrderItem = {
   id: number;
@@ -36,14 +36,82 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: "已取消",
 };
 
+/** 使用 Web Audio API 合成一段清脆的「叮咚」提示音，無需外部音效檔 */
+function playNotificationSound() {
+  try {
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+
+    const playTone = (freq: number, startTime: number, duration: number, gain: number) => {
+      const osc = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      osc.connect(gainNode);
+      gainNode.connect(ctx.destination);
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, startTime);
+      gainNode.gain.setValueAtTime(0, startTime);
+      gainNode.gain.linearRampToValueAtTime(gain, startTime + 0.01);
+      gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+    };
+
+    const now = ctx.currentTime;
+    // 叮（高音）→ 咚（低音）雙音節提示
+    playTone(880, now, 0.4, 0.5);
+    playTone(660, now + 0.18, 0.5, 0.4);
+  } catch {
+    // 瀏覽器不支援或使用者尚未互動，靜默忽略
+  }
+}
+
 export default function KitchenPage() {
   const [filter, setFilter] = useState<"pending" | "preparing" | "all">("pending");
+  const [muted, setMuted] = useState(false);
+  const prevOrderIdsRef = useRef<Set<number> | null>(null);
+  const isFirstLoadRef = useRef(true);
   const utils = trpc.useUtils();
 
   const { data: orders, isLoading, refetch } = trpc.order.list.useQuery(
     filter === "all" ? {} : { status: filter },
-    { refetchInterval: 15000 }
+    { refetchInterval: 10000 }
   );
+
+  // 偵測新訂單並播放提示音
+  const { data: allPendingOrders } = trpc.order.list.useQuery(
+    { status: "pending" },
+    { refetchInterval: 10000 }
+  );
+
+  const handleNewOrder = useCallback(() => {
+    if (muted) return;
+    playNotificationSound();
+    toast("🔔 新訂單進來了！", {
+      description: "有新的待處理訂單，請盡快確認。",
+      duration: 5000,
+    });
+  }, [muted]);
+
+  useEffect(() => {
+    if (!allPendingOrders) return;
+
+    const currentIds = new Set(allPendingOrders.map((o: Order) => o.id));
+
+    if (isFirstLoadRef.current) {
+      // 第一次載入，記錄現有訂單 ID，不播音
+      prevOrderIdsRef.current = currentIds;
+      isFirstLoadRef.current = false;
+      return;
+    }
+
+    if (prevOrderIdsRef.current) {
+      const hasNew = Array.from(currentIds).some(id => !prevOrderIdsRef.current!.has(id));
+      if (hasNew) {
+        handleNewOrder();
+      }
+    }
+
+    prevOrderIdsRef.current = currentIds;
+  }, [allPendingOrders, handleNewOrder]);
 
   const updateStatus = trpc.order.updateStatus.useMutation({
     onSuccess: () => {
@@ -62,7 +130,7 @@ export default function KitchenPage() {
     );
   };
 
-  const pendingCount = orders?.filter((o: Order) => o.status === "pending").length ?? 0;
+  const pendingCount = allPendingOrders?.length ?? 0;
   const preparingCount = orders?.filter((o: Order) => o.status === "preparing").length ?? 0;
 
   return (
@@ -74,12 +142,33 @@ export default function KitchenPage() {
             <ChefHat className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
             出餐管理
           </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">即時訂單管理介面</p>
+          <p className="text-muted-foreground text-xs sm:text-sm mt-0.5">每 10 秒自動更新</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-1.5 text-xs h-8 px-3">
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">重新整理</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          {/* 靜音開關 */}
+          <button
+            onClick={() => {
+              setMuted(m => !m);
+              toast(muted ? "🔔 提示音已開啟" : "🔕 提示音已靜音");
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+              muted
+                ? "border-muted text-muted-foreground bg-muted/50"
+                : "border-primary/30 text-primary bg-primary/5 hover:bg-primary/10"
+            }`}
+            title={muted ? "點擊開啟提示音" : "點擊靜音"}
+          >
+            {muted
+              ? <VolumeX className="w-3.5 h-3.5" />
+              : <Volume2 className="w-3.5 h-3.5" />
+            }
+            <span className="hidden sm:inline">{muted ? "已靜音" : "提示音開"}</span>
+          </button>
+          <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-1.5 text-xs h-8 px-3">
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">重新整理</span>
+          </Button>
+        </div>
       </div>
 
       {/* 統計卡片 */}
@@ -113,6 +202,11 @@ export default function KitchenPage() {
             }`}
           >
             {label}
+            {key === "pending" && pendingCount > 0 && (
+              <span className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] font-bold">
+                {pendingCount > 9 ? "9+" : pendingCount}
+              </span>
+            )}
           </button>
         ))}
       </div>

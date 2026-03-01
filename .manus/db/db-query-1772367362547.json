@@ -1,0 +1,19 @@
+{
+  "query": "\nSELECT COUNT(*) AS order_count FROM orders;\nSELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3tRTtAZSiZRuuCq.root --database 9Noftv4bMettL8uZwzr8XH --execute \nSELECT COUNT(*) AS order_count FROM orders;\nSELECT AUTO_INCREMENT FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'orders';\n",
+  "rows": [
+    {
+      "order_count": "0"
+    },
+    {
+      "order_count": "AUTO_INCREMENT"
+    },
+    {
+      "order_count": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "order_count\n0\nAUTO_INCREMENT\n0\n",
+  "stderr": "",
+  "execution_time_ms": 1776
+}
