@@ -38,7 +38,7 @@ function QRCard({ tableNumber }: { tableNumber: number }) {
         </div>
         <div className="text-center">
           <p className="font-bold text-foreground text-sm sm:text-base">第 {tableNumber} 桌</p>
-          <p className="text-xs text-muted-foreground mt-0.5 break-all max-w-[140px] sm:max-w-[180px] hidden sm:block">{url}</p>
+
         </div>
         <Button variant="outline" size="sm" onClick={handleDownload} className="w-full gap-1.5 text-xs sm:text-sm h-8 sm:h-9">
           <Download className="w-3.5 h-3.5" />
