@@ -1,8 +1,8 @@
-import { useAuth } from "@/_core/hooks/useAuth";
-import { getLoginUrl } from "@/const";
-import { ChefHat, UtensilsCrossed, QrCode, LayoutDashboard, LogOut, Menu, X } from "lucide-react";
+import { ChefHat, UtensilsCrossed, QrCode, LayoutDashboard, LogOut, Menu, X, Eye, EyeOff, Lock } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { useState } from "react";
@@ -13,17 +13,121 @@ const NAV_ITEMS = [
   { href: "/admin/qr", label: "QR 碼", icon: QrCode },
 ];
 
+function LoginForm() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const utils = trpc.useUtils();
+
+  const login = trpc.admin.login.useMutation({
+    onSuccess: () => {
+      toast.success("登入成功");
+      utils.auth.me.invalidate();
+    },
+    onError: (err) => {
+      toast.error(err.message || "帳號或密碼錯誤");
+    },
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!username.trim() || !password.trim()) {
+      toast.error("請輸入帳號與密碼");
+      return;
+    }
+    login.mutate({ username: username.trim(), password });
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <div className="w-full max-w-sm">
+        {/* Logo */}
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+            <LayoutDashboard className="w-8 h-8 text-primary" />
+          </div>
+          <h1 className="text-2xl font-bold text-foreground">管理員登入</h1>
+          <p className="text-muted-foreground text-sm mt-1">請輸入管理員帳號與密碼</p>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="username">帳號</Label>
+            <Input
+              id="username"
+              type="text"
+              placeholder="請輸入帳號"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              autoComplete="username"
+              disabled={login.isPending}
+              className="h-11"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="password">密碼</Label>
+            <div className="relative">
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="請輸入密碼"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                autoComplete="current-password"
+                disabled={login.isPending}
+                className="h-11 pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(v => !v)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-11 text-base mt-2"
+            disabled={login.isPending}
+          >
+            {login.isPending ? (
+              <span className="flex items-center gap-2">
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                登入中...
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                <Lock className="w-4 h-4" />
+                登入後台
+              </span>
+            )}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { data: user, isLoading } = trpc.auth.me.useQuery();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const utils = trpc.useUtils();
 
-  const logout = trpc.auth.logout.useMutation({
-    onSuccess: () => { window.location.href = "/"; },
+  const logout = trpc.admin.logout.useMutation({
+    onSuccess: () => {
+      utils.auth.me.invalidate();
+      window.location.href = "/admin";
+    },
     onError: () => toast.error("登出失敗"),
   });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -31,30 +135,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  if (!isAuthenticated || user?.role !== "admin") {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <div className="text-center max-w-sm w-full">
-          <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-5">
-            <LayoutDashboard className="w-8 h-8 text-primary" />
-          </div>
-          <h1 className="text-2xl font-bold text-foreground mb-2">管理員登入</h1>
-          <p className="text-muted-foreground text-sm mb-6">
-            {isAuthenticated && user?.role !== "admin"
-              ? "您的帳號沒有管理員權限，請聯絡系統管理員。"
-              : "請使用管理員帳號登入以進入後台。"}
-          </p>
-          {!isAuthenticated && (
-            <Button
-              className="w-full h-12 text-base"
-              onClick={() => { window.location.href = getLoginUrl(); }}
-            >
-              使用 Manus 帳號登入
-            </Button>
-          )}
-        </div>
-      </div>
-    );
+  // 未登入或非管理員 → 顯示登入表單
+  if (!user || user.role !== "admin") {
+    return <LoginForm />;
   }
 
   return (
@@ -97,10 +180,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="px-3 py-4 border-t border-sidebar-border">
           <div className="flex items-center gap-3 px-3 py-2 rounded-xl">
             <div className="w-7 h-7 rounded-full bg-sidebar-primary/20 flex items-center justify-center text-xs font-bold text-sidebar-primary flex-shrink-0">
-              {user?.name?.charAt(0) ?? "管"}
+              管
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-sidebar-foreground truncate">{user?.name ?? "管理員"}</p>
+              <p className="text-xs font-medium text-sidebar-foreground truncate">管理員</p>
               <p className="text-xs text-sidebar-foreground/50">系統管理員</p>
             </div>
             <button
@@ -127,7 +210,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-sidebar-foreground/60 max-w-[80px] truncate">{user?.name}</span>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-lg hover:bg-sidebar-accent transition-colors"

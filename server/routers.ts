@@ -1,8 +1,10 @@
 import { z } from "zod";
 import { TRPCError } from "@trpc/server";
-import { COOKIE_NAME } from "@shared/const";
+import { COOKIE_NAME, ONE_YEAR_MS } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
+import { sdk } from "./_core/sdk";
+import { ENV } from "./_core/env";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import {
   getAllMenuItems,
@@ -15,6 +17,7 @@ import {
   getPendingOrders,
   updateOrderStatus,
   seedMenuItems,
+  upsertUser,
 } from "./db";
 import { storagePut } from "./storage";
 import { nanoid } from "nanoid";
@@ -32,6 +35,44 @@ export const appRouter = router({
 
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
+    logout: publicProcedure.mutation(({ ctx }) => {
+      const cookieOptions = getSessionCookieOptions(ctx.req);
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      return { success: true } as const;
+    }),
+  }),
+
+  // 管理員帳密登入
+  admin: router({
+    login: publicProcedure
+      .input(z.object({
+        username: z.string().min(1),
+        password: z.string().min(1),
+      }))
+      .mutation(async ({ input, ctx }) => {
+        // 驗證帳密
+        if (input.username !== ENV.adminUsername || input.password !== ENV.adminPassword) {
+          throw new TRPCError({ code: "UNAUTHORIZED", message: "帳號或密碼錯誤" });
+        }
+        // 確保管理員在 DB 中存在
+        await upsertUser({
+          openId: `admin_${ENV.adminUsername}`,
+          name: "管理員",
+          loginMethod: "password",
+          role: "admin",
+          lastSignedIn: new Date(),
+        });
+        // 建立 JWT session
+        const token = await sdk.signSession({
+          openId: `admin_${ENV.adminUsername}`,
+          appId: ENV.appId || "qr_order_system",
+          name: "管理員",
+        }, { expiresInMs: ONE_YEAR_MS });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, { ...cookieOptions, maxAge: ONE_YEAR_MS });
+        return { success: true };
+      }),
+
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });

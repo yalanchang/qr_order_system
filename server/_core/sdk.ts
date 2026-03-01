@@ -270,7 +270,7 @@ class SDKServer {
     const signedInAt = new Date();
     let user = await db.getUserByOpenId(sessionUserId);
 
-    // If user not in DB, sync from OAuth server automatically
+    // If user not in DB, try to sync from OAuth server (may fail for password-login admins)
     if (!user) {
       try {
         const userInfo = await this.getUserInfoWithJwt(sessionCookie ?? "");
@@ -282,9 +282,18 @@ class SDKServer {
           lastSignedIn: signedInAt,
         });
         user = await db.getUserByOpenId(userInfo.openId);
-      } catch (error) {
-        console.error("[Auth] Failed to sync user from OAuth:", error);
-        throw ForbiddenError("Failed to sync user info");
+      } catch {
+        // For password-based admin login, the session openId is the username.
+        // The user record should already exist; if not, it means the DB was cleared.
+        // Re-create the admin user from the session payload.
+        await db.upsertUser({
+          openId: sessionUserId,
+          name: session.name || "管理員",
+          loginMethod: "password",
+          role: "admin",
+          lastSignedIn: signedInAt,
+        });
+        user = await db.getUserByOpenId(sessionUserId);
       }
     }
 

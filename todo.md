@@ -69,3 +69,10 @@
 ## 修復訂單編號與提示音
 - [x] 修復廚房介面仍顯示 #60004 而非 displayId
 - [x] 確認廚房提示音正常運作
+
+## 管理員帳密登入
+- [x] 後端新增 admin.login / admin.logout tRPC procedure（直接帳密比對 + JWT）
+- [x] 設定預設管理員帳號密碼（環境變數）
+- [x] 前端管理員登入頁改為帳號密碼表單
+- [x] AdminLayout 改用新的 admin session 驗證
+- [x] 移除 Manus OAuth 登入按鈕
